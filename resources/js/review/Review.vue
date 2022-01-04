@@ -1,7 +1,10 @@
 <template>
     <div>
+        <success v-if="success">
+            You've left a review, thank you very much!
+        </success>
         <fatal-error v-if="error"></fatal-error>
-        <div class="row" v-else>
+        <div class="row" v-if="!success && !error">
             <div :class="[{ 'col-md-4': twoColumn }, { 'd-none': oneColumn }]">
                 <div class="card">
                     <div class="card-body" v-if="loading">Loading ...</div>
@@ -81,35 +84,33 @@ export default {
             error: false,
             errors: null,
             sending: false,
+            success: false
         };
     },
-    created() {
+    async created() {
         this.review.id = this.$route.params.id;
         this.loading = true;
-        axios
-            .get(`/api/reviews/${this.review.id}`)
-            .then((response) => (this.existingReview = response.data.data))
-            .catch((err) => {
-                if (is404(err)) {
-                    return axios
-                        .get(`/api/booking-by-review/${this.review.id}`)
-                        .then((response) => {
-                            this.booking = response.data.data;
-                        })
-                        .catch((err) => (this.error = !is404(err)));
+        try {
+            this.existingReview = (await axios.get(`/api/reviews/${this.review.id}`)).data.data
+        } catch (err) {
+            if (is404(err)) {
+                try {
+                    this.booking = (await axios.get(`/api/booking-by-review/${this.review.id}`)).data.data
+                } catch (err) {
+                    this.error = is404(err);
                 }
+            } else {
                 this.error = true;
-            })
-            .then(() => {
-                this.loading = false;
-            });
+            }
+        }
+        this.loading = false
     },
     methods: {
         sendReview() {
             this.sending = true;
             axios
                 .post(`/api/reviews`, this.review)
-                .then((res) => console.log(res))
+                .then((res) => (this.success = 201 === res.status))
                 .catch((err) => {
                     if (is422(err)) {
                         const errors = err.response.data.errors;
@@ -118,7 +119,6 @@ export default {
                             this.errors = errors;
                             return;
                         }
-                        return;
                     }
                     this.error = true;
                 })

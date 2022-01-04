@@ -57,7 +57,7 @@ export default {
     components: {Index},
     mixins: [validationErrors],
     props: {
-        bookableId: String | Number,
+        bookableId: [String, Number],
     },
     data() {
         return {
