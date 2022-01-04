@@ -29,7 +29,6 @@ export default {
             const fraction = Math.round(
                 (this.value - Math.floor(this.value)) * 100
             );
-            console.log(fraction)
             return fraction > 0 && fraction < 50;
         },
         fullStars() {

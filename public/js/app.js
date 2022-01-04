@@ -2190,6 +2190,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _Index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Index */ "./resources/js/Index.vue");
 /* harmony import */ var _shared_utils_response__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../shared/utils/response */ "./resources/js/shared/utils/response.js");
+/* harmony import */ var _shared_mixins_validationErrors__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../shared/mixins/validationErrors */ "./resources/js/shared/mixins/validationErrors.js");
 //
 //
 //
@@ -2239,6 +2240,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
@@ -2246,6 +2248,7 @@ __webpack_require__.r(__webpack_exports__);
   components: {
     Index: _Index__WEBPACK_IMPORTED_MODULE_0__["default"]
   },
+  mixins: [_shared_mixins_validationErrors__WEBPACK_IMPORTED_MODULE_2__["default"]],
   props: {
     bookableId: String | Number
   },
@@ -2254,8 +2257,7 @@ __webpack_require__.r(__webpack_exports__);
       from: null,
       to: null,
       loading: false,
-      status: null,
-      errors: null
+      status: null
     };
   },
   methods: {
@@ -2275,9 +2277,6 @@ __webpack_require__.r(__webpack_exports__);
       }).then(function () {
         return _this.loading = false;
       });
-    },
-    errorFor: function errorFor(field) {
-      return this.hasErrors && this.errors[field] ? this.errors[field] : null;
     }
   },
   computed: {
@@ -2819,7 +2818,6 @@ __webpack_require__.r(__webpack_exports__);
   computed: {
     halfStar: function halfStar() {
       var fraction = Math.round((this.value - Math.floor(this.value)) * 100);
-      console.log(fraction);
       return fraction > 0 && fraction < 50;
     },
     fullStars: function fullStars() {
@@ -2993,6 +2991,32 @@ var router = new vue_router__WEBPACK_IMPORTED_MODULE_3__["default"]({
   routes: routes
 });
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (router);
+
+/***/ }),
+
+/***/ "./resources/js/shared/mixins/validationErrors.js":
+/*!********************************************************!*\
+  !*** ./resources/js/shared/mixins/validationErrors.js ***!
+  \********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  data: function data() {
+    return {
+      errors: null
+    };
+  },
+  methods: {
+    errorsFor: function errorsFor(field) {
+      return null !== this.errors && this.errors[field] ? this.errors[field] : null;
+    }
+  }
+});
 
 /***/ }),
 
@@ -61218,7 +61242,7 @@ var render = function () {
               },
             ],
             staticClass: "form-control form-control-sm",
-            class: [{ "is-invalid": _vm.errorFor("from") }],
+            class: [{ "is-invalid": _vm.errorsFor("from") }],
             attrs: {
               type: "text",
               id: "from",
@@ -61236,7 +61260,7 @@ var render = function () {
             },
           }),
           _vm._v(" "),
-          _c("v-errors", { attrs: { errors: _vm.errorFor("from") } }),
+          _c("v-errors", { attrs: { errors: _vm.errorsFor("from") } }),
         ],
         1
       ),
@@ -61257,7 +61281,7 @@ var render = function () {
               },
             ],
             staticClass: "form-control form-control-sm",
-            class: [{ "is-invalid": _vm.errorFor("to") }],
+            class: [{ "is-invalid": _vm.errorsFor("to") }],
             attrs: {
               type: "text",
               id: "to",
@@ -61275,7 +61299,7 @@ var render = function () {
             },
           }),
           _vm._v(" "),
-          _c("v-errors", { attrs: { errors: _vm.errorFor("from") } }),
+          _c("v-errors", { attrs: { errors: _vm.errorsFor("from") } }),
         ],
         1
       ),

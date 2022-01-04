@@ -19,9 +19,9 @@
                     name="from"
                     class="form-control form-control-sm"
                     placeholder="Start date"
-                    :class="[{ 'is-invalid': errorFor('from') }]"
+                    :class="[{ 'is-invalid': errorsFor('from') }]"
                 />
-                <v-errors :errors="errorFor('from')"></v-errors>
+                <v-errors :errors="errorsFor('from')"></v-errors>
             </div>
             <div class="form-group col-md-6">
                 <label for="to">To</label>
@@ -32,9 +32,9 @@
                     name="to"
                     class="form-control form-control-sm"
                     placeholder="Start date"
-                    :class="[{ 'is-invalid': errorFor('to') }]"
+                    :class="[{ 'is-invalid': errorsFor('to') }]"
                 />
-                <v-errors :errors="errorFor('from')"></v-errors>
+                <v-errors :errors="errorsFor('from')"></v-errors>
             </div>
         </div>
         <button
@@ -50,10 +50,12 @@
 <script>
 import Index from "../Index";
 import {is422} from "../shared/utils/response";
+import validationErrors from "../shared/mixins/validationErrors";
 
 export default {
     name: "Availability",
     components: {Index},
+    mixins: [validationErrors],
     props: {
         bookableId: String | Number,
     },
@@ -63,7 +65,6 @@ export default {
             to: null,
             loading: false,
             status: null,
-            errors: null,
         };
     },
     methods: {
@@ -84,9 +85,6 @@ export default {
                     this.status = e.response.status;
                 })
                 .then(() => (this.loading = false));
-        },
-        errorFor(field) {
-            return this.hasErrors && this.errors[field] ? this.errors[field] : null;
         },
     },
     computed: {
