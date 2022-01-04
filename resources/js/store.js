@@ -3,11 +3,20 @@ export default {
         lastSearch: {
             from: null,
             to: null,
+        },
+        basket: {
+            items: []
         }
     },
     mutations: {
         setLastSearch(state, payload) {
             state.lastSearch = payload
+        },
+        addToBasket(state, payload) {
+            state.basket.items.push(payload)
+        },
+        removeToBasket(state, payload) {
+            state.basket.items = state.basket.items.filter(item => item.bookable.id !== payload)
         }
     },
     actions: {

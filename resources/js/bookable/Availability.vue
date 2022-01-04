@@ -2,12 +2,14 @@
     <div>
         <h6 class="text-uppercase text-secondary font-weight-bolder">
             Check Availability
+            <transition name="fade">
             <span v-if="noAvailability" class="text-danger text-uppercase"
             >(Not Availability)</span
             >
-            <span v-if="hasAvailability" class="text-success text-uppercase"
-            >(Availability)</span
-            >
+                <span v-if="hasAvailability" class="text-success text-uppercase"
+                >(Availability)</span
+                >
+            </transition>
         </h6>
         <div class="form-row">
             <div class="form-group col-md-6">
@@ -19,6 +21,7 @@
                     name="from"
                     class="form-control form-control-sm"
                     placeholder="Start date"
+                    @keyup.enter="check"
                     :class="[{ 'is-invalid': errorsFor('from') }]"
                 />
                 <v-errors :errors="errorsFor('from')"></v-errors>
@@ -32,6 +35,7 @@
                     name="to"
                     class="form-control form-control-sm"
                     placeholder="Start date"
+                    @keyup.enter="check"
                     :class="[{ 'is-invalid': errorsFor('to') }]"
                 />
                 <v-errors :errors="errorsFor('from')"></v-errors>
@@ -42,7 +46,11 @@
             @click="check"
             :disabled="loading"
         >
-            Check
+            <span v-if="!loading">Check</span>
+            <span v-if="loading">
+                <i class="fas fa-circle-notch fa-spin"></i>
+                Checking...
+            </span>
         </button>
     </div>
 </template>
@@ -65,31 +73,30 @@ export default {
             to: this.$store.state.lastSearch.to,
             loading: false,
             status: null,
+            price: null,
         };
     },
     methods: {
-        check() {
+        async check() {
             this.loading = true;
             this.errors = null;
 
-            this.$store.dispatch('setLastSearch', {
+            await this.$store.dispatch('setLastSearch', {
                 from: this.from,
                 to: this.to
             })
-            axios
-                .get(
-                    `/api/bookables/${this.bookableId}/availability?from=${this.from}&to=${this.to}`
-                )
-                .then((res) => {
-                    this.status = res.status;
-                })
-                .catch((e) => {
-                    if (is422(e)) {
-                        this.errors = e.response.data.errors;
-                    }
-                    this.status = e.response.status;
-                })
-                .then(() => (this.loading = false));
+
+            try {
+                this.status = (await axios.get(`/api/bookables/${this.bookableId}/availability?from=${this.from}&to=${this.to}`)).status
+                this.$emit('availability', this.hasAvailability);
+            } catch (e) {
+                if (is422(e)) {
+                    this.errors = e.response.data.errors;
+                }
+                this.status = e.response.status;
+                this.$emit('availability', this.hasAvailability);
+            }
+          this.loading = false;
         },
     },
     computed: {
