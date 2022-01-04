@@ -26,8 +26,19 @@
                 <price-breakdown v-if="price" :price="price" class=""></price-breakdown>
             </transition>
             <transition name="fade">
-                <button class="btn btn-outline-secondary btn-block" v-if="price">Book now</button>
+                <button class="btn btn-outline-secondary btn-block" v-if="price" @click="addToBasket"
+                        :disabled="inBasketAlready">Book now
+                </button>
             </transition>
+            <transition name="fade">
+                <button class="btn btn-outline-secondary btn-block" v-if="inBasketAlready" @click="removeFromBasket">
+                    Remove from basket
+                </button>
+            </transition>
+            <div class="mt-4 text-muted warning" v-if="inBasketAlready">
+                Seems like you've added this object to basket already. If you want to change dates, remove from the
+                basket first.
+            </div>
         </div>
     </div>
 </template>
@@ -58,9 +69,18 @@ export default {
 
             })
     },
-    computed: mapState({
-        lastSearch: "lastSearch"
-    }),
+    computed: {
+        ...mapState({
+            lastSearch: "lastSearch",
+        }),
+        inBasketAlready() {
+            if (null === this.bookable) {
+                return false;
+            }
+
+            return this.$store.getters.inBasketAlready(this.bookable.id)
+        },
+    },
     methods: {
         async checkPrice(hasAvailability) {
             if (!hasAvailability) {
@@ -72,6 +92,16 @@ export default {
             } catch (e) {
                 this.price = null;
             }
+        },
+        addToBasket() {
+            this.$store.commit("addToBasket", {
+                bookable: this.bookable,
+                price: this.price,
+                dates: this.lastSearch
+            })
+        },
+        removeFromBasket() {
+            this.$store.commit("removeFromBasket", this.bookable.id)
         }
     }
 }
@@ -79,5 +109,7 @@ export default {
 </script>
 
 <style scoped>
-
+.warning {
+    font-size: 0.7rem;
+}
 </style>

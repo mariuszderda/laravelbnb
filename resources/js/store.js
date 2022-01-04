@@ -15,7 +15,7 @@ export default {
         addToBasket(state, payload) {
             state.basket.items.push(payload)
         },
-        removeToBasket(state, payload) {
+        removeFromBasket(state, payload) {
             state.basket.items = state.basket.items.filter(item => item.bookable.id !== payload)
         }
     },
@@ -29,6 +29,12 @@ export default {
             if (lastSearch) {
                 context.commit('setLastSearch', JSON.parse(lastSearch))
             }
+        }
+    },
+    getters: {
+        itemsInBasket: (state) => state.basket.items.length,
+        inBasketAlready: (state) => (id) => {
+            return state.basket.items.reduce((result, item) => result || item.bookable.id === id, false)
         }
     }
 }
